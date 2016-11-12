@@ -1,3 +1,5 @@
+# helper functions
+
 command_exists () {
   type "$1" &> /dev/null ;
 }
@@ -5,6 +7,38 @@ command_exists () {
 logm () {
   echo $*
 }
+
+read_default () {
+  defaults read "$1" "$2" &> /dev/null;
+}
+
+upsert_default () {
+  local domain="$1"
+  local key="$2"
+  local value="$3"
+  local original=$(defaults read $domain $key)
+
+  if [ "$original" != "$value" ]; then
+    defaults write "$domain" "$key" "$value"
+    return 0
+  fi
+
+  return 1
+}
+
+delete_default () {
+  local domain="$1"
+  local key="$2"
+
+  if read_default "$domain" "$key"; then
+    defaults delete "$domain" "$key"
+    return 0
+  fi
+
+  return 1
+}
+
+# tasks
 
 enable_filevault () {
   if ! fdesetup status | grep $Q -E "FileVault is (On|Off, but will be enabled after the next restart)." &> /dev/null; then
@@ -17,15 +51,15 @@ create_ssh () {
   local SSH_DIR=~/.ssh
   local SSH_GITHUB="$SSH_DIR/github"
 
-  if ! [ -d $SSH_DIR ]; then
+  if ! [ -d "$SSH_DIR" ]; then
     logm "create .ssh directory"
-    mkdir $SSH_DIR
-    cp ssh_config $SSH_DIR/config
+    mkdir "$SSH_DIR"
+    cp ssh_config "$SSH_DIR/config"
   fi
 
-  if ! [ -f $SSH_GITHUB ]; then
+  if ! [ -f "$SSH_GITHUB" ]; then
     logm "generate a ssh key for github"
-    ssh-keygen -t rsa -b 4096 -f $SSH_GITHUB
+    ssh-keygen -t rsa -b 4096 -f "$SSH_GITHUB"
   fi
 }
 
@@ -36,7 +70,7 @@ configure_git () {
     logm "config git"
     read -r -p 'Git Email Address: ' GIT_EMAIL
     git config --global user.name "$(id -F)"
-    git config --global user.email $GIT_EMAIL
+    git config --global user.email "$GIT_EMAIL"
 
     git config --global push.default simple
 
@@ -47,14 +81,21 @@ configure_git () {
   fi
 }
 
-clean_dock () {
+configure_ui () {
   local DOCK_LIST_DOMAIN="com.apple.dock"
   local DOCK_LIST_PERSISTENT_APPS="persistent-apps"
+  local CLOCK_LIST_DOMAIN="com.apple.menuextra.clock"
+  local CLOCK_LIST_DATE_FORMAT_KEY="DateFormat"
+  local CLOCK_LIST_DATE_FORMAT_VALUE="EEE MMM d  h:mm "
 
-  if defaults read $DOCK_LIST_DOMAIN $DOCK_LIST_PERSISTENT_APPS &> /dev/null; then
+  if delete_default "$DOCK_LIST_DOMAIN" "$DOCK_LIST_PERSISTENT_APPS"; then
     logm "clean dock"
-    defaults delete DOCK_LIST_DOMAIN DOCK_LIST_PERSISTENT_APPS
-    killall Dock
+    killall -KILL Dock
+  fi
+
+  if upsert_default "$CLOCK_LIST_DOMAIN" "$CLOCK_LIST_DATE_FORMAT_KEY" "$CLOCK_LIST_DATE_FORMAT_VALUE"; then
+    logm "set menu clock to show date"
+    killall -KILL SystemUIServer
   fi
 }
 
@@ -68,11 +109,12 @@ install_brew () {
   brew bundle --file=Brewfile
 }
 
+# main
 main () {
   enable_filevault
   create_ssh
   configure_git
-  clean_dock
+  configure_ui
   install_brew
 }
 
