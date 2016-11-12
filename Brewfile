@@ -11,3 +11,6 @@ cask 'vlc'
 cask 'slack'
 cask 'intellij-idea'
 cask 'flux'
+
+mas 'ID-card utility', id: 556524918
+mas 'DigiDoc3 Client', id: 561422020
