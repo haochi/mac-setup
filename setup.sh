@@ -77,24 +77,23 @@ configure_git () {
     git config --global alias.co checkout
     git config --global alias.br branch
     git config --global alias.st status
-    git config --global core.excludesfile '~/.gitignore_global'
+    git config --global core.excludesfile "~/.gitignore_global"
   fi
 }
 
 configure_ui () {
-  local DOCK_LIST_DOMAIN="com.apple.dock"
-  local DOCK_LIST_PERSISTENT_APPS="persistent-apps"
-  local CLOCK_LIST_DOMAIN="com.apple.menuextra.clock"
-  local CLOCK_LIST_DATE_FORMAT_KEY="DateFormat"
-  local CLOCK_LIST_DATE_FORMAT_VALUE="EEE MMM d  h:mm "
-
-  if delete_default "$DOCK_LIST_DOMAIN" "$DOCK_LIST_PERSISTENT_APPS"; then
+  if delete_default "com.apple.dock" "persistent-apps"; then
     logm "clean dock"
     killall -KILL Dock
   fi
 
-  if upsert_default "$CLOCK_LIST_DOMAIN" "$CLOCK_LIST_DATE_FORMAT_KEY" "$CLOCK_LIST_DATE_FORMAT_VALUE"; then
+  if upsert_default "com.apple.menuextra.clock" "DateFormat" "EEE MMM d  h:mm "; then
     logm "set menu clock to show date"
+    killall -KILL SystemUIServer
+  fi
+
+  if upsert_default "com.apple.menuextra.battery" "ShowPercent" "YES"; then
+    logm "set menu battery to show percentage"
     killall -KILL SystemUIServer
   fi
 }
@@ -105,6 +104,8 @@ install_brew () {
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   fi
 
+  logm "update brew"
+  brew update
   logm "install brewfile content"
   brew bundle --file=Brewfile
 }
