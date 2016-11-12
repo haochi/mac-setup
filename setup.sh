@@ -35,7 +35,7 @@ configure_git () {
   if ! [ -f ~/.gitconfig ]; then
     logm "config git"
     read -r -p 'Git Email Address: ' GIT_EMAIL
-    git config --global user.name $(id -F)
+    git config --global user.name "$(id -F)"
     git config --global user.email $GIT_EMAIL
 
     git config --global push.default simple
