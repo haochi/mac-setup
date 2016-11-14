@@ -41,7 +41,7 @@ delete_default () {
 # tasks
 
 enable_filevault () {
-  if ! fdesetup status | grep $Q -E "FileVault is (On|Off, but will be enabled after the next restart)." &> /dev/null; then
+  if ! fdesetup status | grep -q -E "FileVault is (On|Off, but will be enabled after the next restart)."; then
     logm "enable filevault"
     sudo fdesetup enable -user $USER
   fi
