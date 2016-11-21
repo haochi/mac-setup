@@ -38,6 +38,12 @@ delete_default () {
   return 1
 }
 
+string_in_file () {
+  local string="$1"
+  local file="$2"
+  grep -q "$string" "$file"
+}
+
 # tasks
 
 enable_filevault () {
@@ -98,6 +104,22 @@ configure_ui () {
   fi
 }
 
+configure_environment_variables () {
+  local profile_file=~/.profile
+
+  local export_java_home="export JAVA_HOME=\$(/usr/libexec/java_home)"
+  if ! string_in_file "$export_java_home" "$profile_file"; then
+    logm "adding JAVA_HOME to $profile_file"
+    echo "$export_java_home" >> $profile_file
+  fi
+
+  local export_postgres_app_path="export PATH=\$PATH:/Applications/Postgres.app/Contents/Versions/latest/bin"
+  if ! string_in_file "$export_postgres_app_path" "$profile_file"; then
+    logm "adding Postgres.app bin to \$PATH"
+    echo "$export_postgres_app_path" >> $profile_file
+  fi
+}
+
 install_brew () {
   if ! command_exists brew; then
     logm "install homebrew"
@@ -116,6 +138,7 @@ main () {
   create_ssh
   configure_git
   configure_ui
+  configure_environment_variables
   install_brew
 }
 
