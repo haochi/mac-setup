@@ -132,6 +132,12 @@ install_brew () {
   brew bundle --file=Brewfile
 }
 
+post_brew_config () {
+  if upsert_default "com.matryer.BitBar" "pluginsDirectory" "$(pwd)/bitbar"; then
+    logm "set bitbar plugins directory"
+  fi
+}
+
 # main
 main () {
   enable_filevault
@@ -140,6 +146,7 @@ main () {
   configure_ui
   configure_environment_variables
   install_brew
+  post_brew_config
 }
 
 main
