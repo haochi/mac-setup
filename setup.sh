@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # helper functions
 
 command_exists () {
