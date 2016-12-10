@@ -3,6 +3,8 @@ cask_args appdir: '/Applications'
 tap 'homebrew/bundle'
 
 brew 'maven'
+brew 'python'
+brew 'jq'
 
 cask 'macvim'
 cask 'firefox'
