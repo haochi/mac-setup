@@ -31,6 +31,16 @@ class PewCapital(PersonalCapital):
         with open(self.__session_file, 'w') as data_file:
             data_file.write(json.dumps(existing_data, sort_keys=True, indent=4, separators=(',', ': ')))
 
+def account_filter(account):
+    return account['currentBalance'] > 0
+
+def account_reducer(memo, account):
+    name = account['firmName']
+    if name not in memo:
+        memo[name] = 0
+    memo[name] += account['currentBalance']
+    return memo
+
 def main():
     email, password = get_auth()
     pc = PewCapital()
@@ -48,13 +58,12 @@ def main():
     pc.save_session()
 
     accounts = accounts_response.json()['spData']
-    checking_accounts = filter(lambda account: account['accountTypeNew'] == 'CHECKING' and account['currentBalance'] > 0, accounts['accounts'])
-
+    balance_by_institutions = reduce(account_reducer, filter(account_filter, accounts['accounts']), {})
 
     print('{:,.0f}'.format(accounts['networth']))
     print('---')
-    for checking_account in checking_accounts:
-        print('{0} {1:,.0f}'.format(checking_account['firmName'], checking_account['currentBalance']))
+    for institution, balance in balance_by_institutions.iteritems():
+        print('{0} {1:,.0f}'.format(institution, balance))
 
 if __name__ == '__main__':
     main()
