@@ -134,7 +134,7 @@ install_brew () {
 }
 
 post_brew_config () {
-  if upsert_default "com.matryer.BitBar" "pluginsDirectory" "$(pwd)/bitbar"; then
+  if upsert_default "com.matryer.BitBar" "pluginsDirectory" "$(pwd)/bitbar/enabled"; then
     logm "set bitbar plugins directory"
   fi
 }
