@@ -119,6 +119,12 @@ configure_environment_variables () {
     logm "adding Postgres.app bin to \$PATH"
     echo "$export_postgres_app_path" >> $profile_file
   fi
+  
+  local enable_cli_color="export CLICOLOR=1"
+  if ! string_in_file "$enable_cli_color" "$profile_file"; then
+    logm "Enable CLI color"
+    echo "$enable_cli_color" >> $profile_file
+  fi
 }
 
 install_brew () {
