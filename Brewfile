@@ -5,6 +5,8 @@ tap 'homebrew/bundle'
 brew 'maven'
 brew 'python'
 brew 'jq'
+brew 'node'
+brew 'yarn'
 
 cask 'macvim'
 cask 'firefox'
@@ -21,6 +23,7 @@ cask 'spotify'
 cask 'java'
 cask 'postgres'
 cask 'bitbar'
+cask 'visual-studio-code'
 
 mas 'ID-card utility', id: 556524918
 mas 'DigiDoc3 Client', id: 561422020
