@@ -7,6 +7,7 @@ brew 'python'
 brew 'jq'
 brew 'node'
 brew 'yarn'
+brew 'go'
 
 cask 'macvim'
 cask 'firefox'
