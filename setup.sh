@@ -160,6 +160,13 @@ install_aws_cli () {
   fi
 }
 
+install_vagrant () {
+  local has_vagrant_digitalocean=$(vagrant plugin list | grep "vagrant-digitalocean")
+  if ! [ has_vagrant_digitalocean ]; then
+    vagrant plugin install vagrant-digitalocean
+  fi
+}
+
 install_anaconda () {
   local installer="fixture/Anaconda2-4.2.0-MacOSX-x86_64.sh"
   local installer_url="https://repo.continuum.io/archive/$installer"
@@ -187,6 +194,7 @@ main () {
   post_brew_config
   install_aws_cli
   install_anaconda
+  install_vagrant
 
   configure_environment_variables
 }
