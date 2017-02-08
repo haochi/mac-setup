@@ -25,6 +25,9 @@ cask 'java'
 cask 'postgres'
 cask 'bitbar'
 cask 'visual-studio-code'
+cask 'virtualbox'
+cask 'vagrant'
+cask 'vagrant-manager'
 
 mas 'ID-card utility', id: 556524918
 mas 'DigiDoc3 Client', id: 561422020
