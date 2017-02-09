@@ -161,8 +161,7 @@ install_aws_cli () {
 }
 
 install_vagrant () {
-  local has_vagrant_digitalocean=$(vagrant plugin list | grep "vagrant-digitalocean")
-  if ! [ has_vagrant_digitalocean ]; then
+  if ! [ $(vagrant plugin list | grep "vagrant-digitalocean") ]; then
     vagrant plugin install vagrant-digitalocean
   fi
 }
