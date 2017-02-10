@@ -116,7 +116,7 @@ configure_environment_variables () {
 
   local export_postgres_app_path='export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/latest/bin'
   if ! string_in_file "$export_postgres_app_path" "$profile_file"; then
-    logm "adding Postgres.app bin to \$PATH"
+    logm 'adding Postgres.app bin to $PATH'
     echo "$export_postgres_app_path" >> $profile_file
   fi
   
@@ -124,6 +124,18 @@ configure_environment_variables () {
   if ! string_in_file "$enable_cli_color" "$profile_file"; then
     logm "Enable CLI color"
     echo "$enable_cli_color" >> $profile_file
+  fi
+
+  local export_go_path='export GOPATH=$HOME/gopath'
+  if ! string_in_file "$export_go_path" "$profile_file"; then
+    logm 'export $GOPATH'
+    echo "$export_go_path" >> $profile_file
+  fi
+
+  local add_go_path_bin_to_path='export PATH=$GOPATH/bin:$PATH'
+  if ! string_in_file "$add_go_path_bin_to_path" "$profile_file"; then
+    logm 'adding $GOPATH/bin to $PATH'
+    echo "$add_go_path_bin_to_path" >> $profile_file
   fi
 
   local anaconda_entry='export PATH=$HOME/anaconda2/bin:$PATH'
