@@ -8,6 +8,7 @@ brew 'jq'
 brew 'node'
 brew 'yarn'
 brew 'go'
+brew 'mosh'
 
 cask 'macvim'
 cask 'firefox'
