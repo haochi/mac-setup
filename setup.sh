@@ -205,7 +205,7 @@ main () {
   install_brew
   post_brew_config
   install_aws_cli
-  install_anaconda
+  #install_anaconda
   install_vagrant
 
   configure_environment_variables
