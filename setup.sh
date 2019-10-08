@@ -114,34 +114,10 @@ configure_environment_variables () {
     echo "$export_java_home" >> $profile_file
   fi
 
-  local export_postgres_app_path='export PATH=$PATH:/Applications/Postgres.app/Contents/Versions/latest/bin'
-  if ! string_in_file "$export_postgres_app_path" "$profile_file"; then
-    logm 'adding Postgres.app bin to $PATH'
-    echo "$export_postgres_app_path" >> $profile_file
-  fi
-  
   local enable_cli_color="export CLICOLOR=1"
   if ! string_in_file "$enable_cli_color" "$profile_file"; then
     logm "Enable CLI color"
     echo "$enable_cli_color" >> $profile_file
-  fi
-
-  local export_go_path='export GOPATH=$HOME/gopath'
-  if ! string_in_file "$export_go_path" "$profile_file"; then
-    logm 'export $GOPATH'
-    echo "$export_go_path" >> $profile_file
-  fi
-
-  local add_go_path_bin_to_path='export PATH=$GOPATH/bin:$PATH'
-  if ! string_in_file "$add_go_path_bin_to_path" "$profile_file"; then
-    logm 'adding $GOPATH/bin to $PATH'
-    echo "$add_go_path_bin_to_path" >> $profile_file
-  fi
-
-  local anaconda_entry='export PATH=$HOME/anaconda2/bin:$PATH'
-  if ! string_in_file "$anaconda_entry" "$profile_file"; then
-    logm "adding Anaconda to $profile_file"
-    echo "$anaconda_entry" >> $profile_file
   fi
 
   source "$profile_file"
@@ -159,42 +135,6 @@ install_brew () {
   brew bundle --file=Brewfile
 }
 
-post_brew_config () {
-  if upsert_default "com.matryer.BitBar" "pluginsDirectory" "$(pwd)/bitbar/enabled"; then
-    logm "set bitbar plugins directory"
-  fi
-}
-
-install_aws_cli () {
-  if ! command_exists aws; then
-    logm "install aws-cli"
-    pip install awscli
-  fi
-}
-
-install_vagrant () {
-  local has_vagrant_digitalocean=$(vagrant plugin list | grep "vagrant-digitalocean")
-  if ! [ $? ]; then
-    vagrant plugin install vagrant-digitalocean
-  fi
-}
-
-install_anaconda () {
-  local installer="fixture/Anaconda2-4.2.0-MacOSX-x86_64.sh"
-  local installer_url="https://repo.continuum.io/archive/$installer"
-
-  mkdir -p fixture
-  if ! command_exists conda; then
-    if ! [ -f "$installer" ]; then
-      logm "downloading $installer_url"
-      curl -o "$installer" "$installer_url"
-    fi
-
-    logm "installing $installer"
-    bash "$installer" -b
-  fi
-}
-
 # main
 main () {
   enable_filevault
@@ -203,10 +143,6 @@ main () {
   configure_ui
   
   install_brew
-  post_brew_config
-  install_aws_cli
-  #install_anaconda
-  install_vagrant
 
   configure_environment_variables
 }
