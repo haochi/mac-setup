@@ -127,6 +127,7 @@ install_brew () {
   if ! command_exists brew; then
     logm "install homebrew"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    brew analytics off
   fi
 
   logm "update brew"
