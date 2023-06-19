@@ -66,7 +66,7 @@ create_ssh () {
 
   if ! [ -f "$SSH_GITHUB" ]; then
     logm "generate a ssh key for github"
-    ssh-keygen -t rsa -b 4096 -f "$SSH_GITHUB"
+    ssh-keygen -t ed25519 -f "$SSH_GITHUB"
   fi
 }
 
@@ -90,9 +90,14 @@ configure_git () {
 
 configure_ui () {
   if delete_default "com.apple.dock" "persistent-apps"; then
+    defaults write com.apple.dock autohide -bool true
+    defaults write com.apple.dock "show-recents" -bool true
     logm "clean dock"
     killall -KILL Dock
   fi
+
+  # disable dictation
+  defaults write com.apple.HIToolbox -int 0
 
   if upsert_default "com.apple.menuextra.clock" "DateFormat" "EEE MMM d  h:mm "; then
     logm "set menu clock to show date"
@@ -107,12 +112,6 @@ configure_ui () {
 
 configure_environment_variables () {
   local profile_file=~/.profile
-
-  local export_java_home='export JAVA_HOME=$(/usr/libexec/java_home)'
-  if ! string_in_file "$export_java_home" "$profile_file"; then
-    logm "adding JAVA_HOME to $profile_file"
-    echo "$export_java_home" >> $profile_file
-  fi
 
   local enable_cli_color="export CLICOLOR=1"
   if ! string_in_file "$enable_cli_color" "$profile_file"; then
@@ -134,16 +133,19 @@ install_brew () {
   brew update
   logm "install brewfile content"
   brew bundle --file=Brewfile
+
+  # Enable fzf
+  $(brew --prefix)/opt/fzf/install
 }
 
 # main
-main () {
+main () {  
+  install_brew
+
   enable_filevault
   create_ssh
   configure_git
   configure_ui
-  
-  install_brew
 
   configure_environment_variables
 }
